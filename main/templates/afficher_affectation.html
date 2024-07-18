@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afficher les Affectations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            direction: rtl; /* Ensures text is aligned right to left */
+        }
+        .homenavbar {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            text-align: center; /* Fixed typo from "centre" to "center" */
+            font-size: 18px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+        .homenavbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        .homenavbar a:hover {
+            text-decoration: underline;
+        }
+        h1, h2 {
+            margin-top: 70px; /* Added margin to prevent overlap with fixed navbar */
+        }
+        .confirm-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .confirm-btn:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        table thead {
+            background-color: #007bff;
+            color: #fff;
+        }
+        table thead th {
+            padding: 15px;
+            text-align: center;
+            font-size: 16px;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        table tbody tr:hover {
+            background-color: #ddd;
+        }
+        table tbody td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .container {
+            width: 80%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="homenavbar">
+        <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
+    </div>
+    <h1>برنامج المداومة</h1>
+    <form action="{% url 'afficher affectation' %}" method="POST">
+        {% csrf_token %}
+        <select name="month" id="month" required>
+            <option value="" disabled selected>اختر الشهر</option>
+            <option value="1">جانفي</option>
+            <option value="2">فيفري</option>
+            <option value="3">مارس</option>
+            <option value="4">أفريل</option>
+            <option value="5">ماي</option>
+            <option value="6">جوان</option>
+            <option value="7">جويلية</option>
+            <option value="8">أوت</option>
+            <option value="9">سبتمبر</option>
+            <option value="10">أكتوبر</option>
+            <option value="11">نوفمبر</option>
+            <option value="12">ديسمبر</option>
+        </select>
+        <select name="year" id="year" required>
+            <option value="" disabled selected>اختر السنة</option>
+            {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="confirm-btn">تأكيد</button>
+    </form>
+    <div class="container">
+        {% if selected_month and selected_year %}
+            <h2>برنامج المداومة لشهر {{ selected_month }} {{ selected_year }}</h2>
+            <div class="cadre">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اليوم</th>
+                            <th>الاسم و اللقب</th>
+                            <th>الرتبة او الوظيفة</th>
+                            <th>الساعات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day, affectations in grouped_affectations.items %}
+                            {% for affectation in affectations %}
+                                <tr>
+                                    {% if forloop.first %}
+                                        <td rowspan="{{ affectations|length }}">{{ day }}</td>
+                                    {% endif %}
+                                    <td>{{ affectation.cadre }}</td>
+                                    <td>{{ affectation.cadre.poste }}</td>
+                                    <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>لم يتم تحديد شهر وسنة.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

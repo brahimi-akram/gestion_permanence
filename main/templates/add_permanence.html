@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اضافة مداومة</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            direction: rtl; /* Ensures text is aligned right to left */
+        }
+        .form-container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            
+        }
+        .form-group {
+            margin-top: 15px;
+            margin-top: 15px;
+            width: 400px;
+            background: rgb(239, 238, 238);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 10px;
+            border-style: ridge;
+            
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 90%;
+            padding: 10px;
+            margin: 0 auto;
+            border: 1px solid #262626;
+            border-radius: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            background-color: #f4f1f1;
+        }
+        .form-group input[type="submit"] {
+            background-color: #4c77af;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 350px;
+            
+        }
+        .form-group input[type="submit"]:hover {
+            background-color: #3a47d8;
+        }
+        .container{
+            height: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <form method='post'>
+        {% csrf_token %}
+        {% for index, form in forms %}
+        <div class="form-group">
+            <label for="worker_{{ index }}">المداوم {{index}}</label>
+            <select name="worker_{{ index }}" id="worker_{{ index }}">
+                <option value="" disabled selected>اختر المداوم</option>
+                {% for cadre in cadres %}
+                <option value="{{ cadre.id }}">{{ cadre }}</option>
+                {% endfor %}
+            </select>
+            
+            {{ form.as_p }}
+        </div>
+        {% endfor %}
+        <div class="form-group">
+            <button  type="submit" value="Submit"> submit </button>
+        </div>
+    </form>
+    </div>
+</body>
+</html>

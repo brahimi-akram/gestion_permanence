@@ -1,0 +1,155 @@
+<!-- view_permanence.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الدوام</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            direction: rtl; /* Ensures text is aligned right to left */
+        }
+        .homenavbar {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            text-align: center; /* Fixed typo from "centre" to "center" */
+            font-size: 18px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+        .homenavbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        .homenavbar a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: right;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-top: 50px;
+            border: none;
+        }
+    
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .cadre{
+            display : flex;
+            align-items : space-evenly;
+            flex-direction: row-reverse ;
+        }
+    </style>
+    
+</head>
+<body>
+    
+    <div class="homenavbar">
+        <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
+    </div>
+    <div class="container">
+        <h1>قائمة الدوام</h1>
+        <h2>الإطارات</h2>
+        <div class="cadre">
+            <table>
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>اللقب</th>
+                        <th>الوظيفة</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>تعديل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cadre in cadres %}
+                        <tr>
+                            <td>{{ cadre.nom }}</td>
+                            <td>{{ cadre.prenom }}</td>
+                            <td>{{ cadre.poste }}</td>
+                            <td> <a href = "mailto:{{cadre.email}}" >{{ cadre.email }}</a></td>
+                            <td>
+                                {% if cadre.active %}
+                                    <a href="{% url 'modifier cadre' cadre.id %}">تعديل الإطار</a>
+                                    <a href="{% url 'masque cadre' cadre.id %}" style="margin-right : 30px;">إخفاء الإطار</a>
+                                {% else %}
+                                    <a href="{% url 'modifier cadre' cadre.id %}">تعديل الإطار</a>
+                                    <a href="{% url 'desmasque cadre' cadre.id %}" style="margin-right: 30px;">إظهار الإطار</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <a href="{% url 'ajouter cadre' %}" class="btn">إضافة إطار جديد</a>
+        <a href="{% url 'afficher liste' %}?filter=active" class="btn">عرض النشطين</a>
+        <a href="{% url 'afficher liste' %}?filter=inactive" class="btn">عرض غير النشطين</a>
+        <button class="btn" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="excel_file">
+            <button type="submit" class ="btn">Upload Excel</button>
+        </form>
+    </div>
+    <script>
+        function sendEmail() {
+            // Les adresses e-mail devraient être passées côté client via une balise cachée ou similaire
+            var emails = "{{ email_list }}"; // Remplir avec les e-mails depuis Django
+            var subject = "Votre sujet ici";
+            var body = "Votre message ici";
+            var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+            window.location.href = mailto_link;
+        }
+    </script>
+    
+</body>
+</html>
