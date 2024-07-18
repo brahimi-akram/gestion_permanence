@@ -9,59 +9,49 @@
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             margin: 0;
-            direction: rtl; /* Ensures text is aligned right to left */
+            direction: rtl; /* Assure que le texte est aligné de droite à gauche */
         }
+        
         .homenavbar {
             background-color: #007bff;
             color: #fff;
             padding: 10px;
             text-align: center;
             font-size: 18px;
-            width: 100%;
+            width: 100%; /* Utilisation de 100vw pour occuper toute la largeur de la fenêtre */
             position: fixed;
             top: 0;
+            left: 0;
+            z-index: 1000; /* Assurer que la barre de navigation est au-dessus du contenu */
         }
+        
         .homenavbar a {
             color: #fff;
             text-decoration: none;
             margin: 0 15px;
             font-weight: bold;
+            cursor: pointer; /* Change le curseur en pointeur */
         }
+        
         .homenavbar a:hover {
-            text-decoration: underline;
+            text-decoration: underline; /* Soulignement du lien au survol */
         }
-
+        
         .container {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 90%; /* Adjusted width for responsiveness */
-            max-width: 1200px; /* Maximum width for large screens */
-            margin: 70px auto; /* Center align and add top margin to avoid overlap with fixed navbar */
+            width: 90%; /* Largeur ajustée pour la réactivité */
+            max-width: 1200px; /* Largeur maximale pour les grands écrans */
+            margin: 70px auto; /* Centrer et ajouter une marge en haut pour éviter le chevauchement avec la barre de navigation fixe */
         }
-
+        
         h1 {
             color: #333;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: right;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
+        
         .btn {
             display: block;
             width: 100%;
@@ -75,74 +65,78 @@
             transition: background-color 0.3s;
             margin-top: 20px;
             border: none;
-            max-width: 300px; /* Limit button width on larger screens */
+            max-width: 300px; /* Limiter la largeur du bouton pour les grands écrans */
             margin-left: auto;
             margin-right: auto;
+            cursor: pointer; /* Change le curseur en pointeur */
         }
-
+        
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Couleur de fond plus sombre au survol */
         }
-
+        
         .cadre {
-            overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+            overflow-x: auto; /* Activer le défilement horizontal sur les petits écrans */
         }
-
-        /* Media query for screens smaller than 768px (like phones) */
+        
+        /* Media query pour les écrans plus petits que 768px (comme les téléphones) */
         @media screen and (max-width: 768px) {
             .container {
-                width: 95%; /* Adjusted width for smaller screens */
-                margin-top: 20px; /* Add space at the top on smaller screens */
+                width: 95%; /* Largeur ajustée pour les écrans plus petits */
+                margin-top: 20px; /* Ajouter de l'espace en haut sur les écrans plus petits */
             }
-
+        
             .btn {
-                width: auto; /* Reset button width to auto for smaller screens */
-                max-width: 100%; /* Ensure button width doesn't exceed screen width */
+                width: auto; /* Réinitialiser la largeur du bouton à auto pour les écrans plus petits */
+                max-width: 100%; /* Assurer que la largeur du bouton n'excède pas la largeur de l'écran */
                 margin-left: 10px;
                 margin-right: 10px;
             }
-
+        
             .cadre {
-                overflow-x: auto; /* Ensure horizontal scrolling on smaller screens */
+                overflow-x: auto; /* Assurer le défilement horizontal sur les écrans plus petits */
             }
             
-            /* Adjust table styles for smaller screens */
+            /* Ajuster les styles du tableau pour les écrans plus petits */
             table {
-                font-size: 9px; /* Decrease font size for better readability on small screens */
+                font-size: 9px; /* Diminuer la taille de police pour une meilleure lisibilité sur les petits écrans */
             }
             
             th, td {
-                padding: 8px; /* Decrease padding for better fit on small screens */
+                padding: 8px; /* Réduire le padding pour un meilleur ajustement sur les petits écrans */
             }   
         }
+        
         .btn-group {
             display: flex;
-            justify-content: space-between; /* Aligne les boutons avec un espace entre eux */
-            width: 100%; /* Occupe toute la largeur disponible */
-            max-width: 600px; /* Limite la largeur pour une meilleure lisibilité */
+            justify-content: center; /* Centrer les boutons */
+            gap: 10px; /* Ajouter un espacement entre les boutons */
             margin-top: 20px; /* Marge supérieure pour l'espace */
+            max-width: 600px; /* Limiter la largeur pour une meilleure lisibilité */
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .btn-group form {
-            flex: 1; /* Les formulaires prennent tout l'espace disponible */
+            flex: 1; /* Le formulaire prend toute la largeur disponible */
             margin: 0 5px; /* Marge horizontale entre les formulaires */
         }
         
         .btn-group button {
-            width: 100%; /* Boutons prenant toute la largeur du formulaire */
-            padding: 10px; /* Espacement interne des boutons */
-            background-color: #007bff; /* Couleur de fond des boutons */
-            color: white; /* Couleur du texte */
+            width: 100%; /* Le bouton prend toute la largeur du formulaire */
+            padding: 10px; /* Espacement interne du bouton */
+            background-color: #007bff; /* Couleur de fond du bouton */
+            color: white; /* Couleur du texte du bouton */
             border: none; /* Pas de bordure */
             border-radius: 5px; /* Coins arrondis */
             cursor: pointer; /* Curseur de type pointer */
         }
         
         .btn-group button:hover {
-            background-color: #0056b3; /* Couleur de fond au survol */
+            background-color: #0056b3; /* Couleur de fond plus sombre au survol */
         }
         
-        .file{
+        .file {
             display: block;
             width: 100%;
             padding: 10px 20px;
@@ -152,10 +146,59 @@
             border-radius: 4px;
             margin-top: 20px;
             border: none;
-            max-width: 300px; /* Limit button width on larger screens */
+            max-width: 300px; /* Limiter la largeur du bouton pour les grands écrans */
             margin-left: auto;
             margin-right: auto;
         }
+        
+        .custom-file-upload {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .custom-file-upload input[type="file"] {
+            display: none; /* Cacher le bouton de fichier natif */
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        table thead {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        table thead th {
+            text-align: center;
+        }
+        
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        table tbody tr:hover {
+            background-color: #ddd;
+        }
+        
+        table tbody td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        
     </style>
 </head>
 <body>
@@ -212,19 +255,19 @@
         
         <button class="btn" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
         <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="excel_file">تحميل ملف Excel:</label>
-                <input type="file" name="excel_file" id="excel_file" class="file" accept=".xlsx">
-            </div>
+            <label class="custom-file-upload">
+                <span>اختر ملفًا</span>
+                <input type="file" name="excel_file">
+            </label>
             <button type="submit" class="btn"> Excel تحميل </button>
         </form>
     </div>
+    
     <script>
         function sendEmail() {
-            var emails = "{{ email_list }}"; // Replace with actual email list from Django
-            var subject = "Your subject here";
-            var body = "Your message here";
+            var emails = "{{ email_list }}"; // Remplacez par la liste d'emails réelle provenant de Django
+            var subject = "Votre sujet ici";
+            var body = "Votre message ici";
             var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
             window.location.href = mailto_link;
         }

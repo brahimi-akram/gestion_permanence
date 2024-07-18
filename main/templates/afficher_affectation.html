@@ -15,6 +15,7 @@
             height: 100vh;
             margin: 0;
             direction: rtl; /* Ensures text is aligned right to left */
+            padding-top: 100px;
         }
         .homenavbar {
             background-color: #007bff;
@@ -39,6 +40,21 @@
         h1, h2 {
             margin-top: 100px; /* Adjusted margin for better spacing */
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: right;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
         .confirm-btn {
             background-color: #007bff;
             color: white;
@@ -51,34 +67,7 @@
         .confirm-btn:hover {
             background-color: #0056b3;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        table thead {
-            background-color: #007bff;
-            color: #fff;
-        }
-        table thead th {
-            padding: 15px;
-            text-align: center;
-            font-size: 16px;
-        }
-        table tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        table tbody tr:hover {
-            background-color: #ddd;
-        }
-        table tbody td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
+        
         .container {
             width: 80%;
             background-color: #fff;
@@ -92,7 +81,7 @@
         /* Media queries for responsiveness */
         @media only screen and (max-width: 768px) {
             h1, h2 {
-                margin-top: 40px; /* Adjust margin for smaller screens */
+                margin-top: 20px; /* Adjust margin for smaller screens */
             }
             .container {
                 width: 90%; /* Adjust container width for smaller screens */
