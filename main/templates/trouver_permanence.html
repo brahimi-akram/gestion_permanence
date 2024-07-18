@@ -8,19 +8,18 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
+            margin: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
             direction: rtl; /* Ensures text is aligned right to left */
         }
         .homenavbar {
             background-color: #007bff;
             color: #fff;
             padding: 10px;
-            text-align: center; /* Fixed typo from "centre" to "center" */
+            text-align: center;
             font-size: 18px;
             width: 100%;
             position: fixed;
@@ -36,7 +35,6 @@
             text-decoration: underline;
         }
 
-
         .calendar-widget {
             display: flex;
             flex-direction: column;
@@ -46,9 +44,9 @@
             border: 1px solid #ced4da;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            margin: 0 auto;
-            padding-top: 80px; /* Ajoutez un padding-top pour dégager l'espace en dessous de la homenavbar */
+            width: 90%; /* Adjusted width for responsiveness */
+            max-width: 800px; /* Maximum width for larger screens */
+            margin: 70px auto; /* Center align and add top margin to avoid overlap with fixed navbar */
         }
 
         .month-year {
@@ -100,6 +98,7 @@
         .day-row {
             display: flex;
             margin-bottom: 10px;
+            width: 100%;
         }
 
         .day-date,
@@ -111,15 +110,20 @@
             width: 170px;
         }
 
-        .firstline-container{
+        .firstline-container {
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
+            margin-bottom: 10px; /* Adjust spacing */
         }
-        hr{
-            border :#0056b3;
-            height: 1px;
+
+        hr {
+            border: 1px solid #0056b3; /* Adjusted styling for HR */
+            width: 90%;
+            margin: 10px 0; /* Adjust margin for spacing */
         }
+
         .popup {
             display: none; /* Hidden by default */
             position: fixed;
@@ -129,10 +133,9 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-
+            background-color: rgba(0, 0, 0, 0.4);
         }
+
         .popup-content {
             position: relative;
             background-color: #fefefe;
@@ -149,30 +152,59 @@
 
         .close-btn {
             color: #aaa;
-            float: right;
             font-size: 28px;
             font-weight: bold;
             position: absolute;
             top: 0;
             right: 5px;
+            cursor: pointer;
         }
 
         .close-btn:hover,
         .close-btn:focus {
             color: black;
-            text-decoration: none;
-            cursor: pointer;
         }
 
-        .confirm-popup{
+        .confirm-popup {
             position: absolute;
             left: 50%;
-            transform: translate(-50%,-50%);
+            transform: translate(-50%, -50%);
             bottom: 0%;
         }
-        .actions{
+
+        .actions {
             margin-top: 8px;
             margin-left: 2px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .calendar-widget {
+                width: 95%; /* Adjusted width for smaller screens */
+                margin-top: 20px; /* Add space at the top on smaller screens */
+            }
+
+            .day-date,
+            .day-name {
+                width: 100%; /* Full width for smaller screens */
+                margin-bottom: 5px; /* Adjust spacing between items */
+            }
+
+            .change-month-btn {
+                width: 45%; /* Adjust button width for smaller screens */
+                margin: 5px; /* Adjust spacing between buttons */
+            }
+
+            .popup-content {
+                width: 95%; /* Adjust popup width for smaller screens */
+            }
+
+            .close-btn {
+                right: 10px; /* Adjust close button position for smaller screens */
+            }
+
+            hr {
+                width: 95%; /* Adjust HR width for smaller screens */
+            }
         }
     </style>
 </head>
@@ -197,10 +229,9 @@
                         {{ perm.nom }}
                     </div>
                     <div class="actions">
-                        <button  onclick="numbre_of_worker_and_redirect({{perm.id}},{{perm.nombre_cadre}},{{perm.date_debut.day}}, {{perm.date_debut.month}}, {{perm.date_debut.year}} )">مداومة &#128203;</button>
+                        <button onclick="numbre_of_worker_and_redirect({{ perm.id }}, {{ perm.nombre_cadre }}, {{ perm.date_debut.day }}, {{ perm.date_debut.month }}, {{ perm.date_debut.year }})">مداومة &#128203;</button>
                     </div>
                 </div>
-
             {% endfor %}
         </div>
         <div class="popup" id="popup">
@@ -215,14 +246,13 @@
                 </form>
             </div>
         </div>
-        
     </div>
 
     <script>
         // Initialize current month and year
-        let currentMonth = new Date().getMonth()+1;  // Get current month (1-based index)
-        let currentYear = new Date().getFullYear();  // Get current year
-        let currentDay = new Date().getDate();
+        let currentMonth = new Date().getMonth() + 1; // Get current month (1-based index)
+        let currentYear = new Date().getFullYear(); // Get current year
+
         // Array of Georgian (Gregorian) month names in Algerian Arabic
         const georgianMonths = [
             "جانفي", "فيفري", "مارس", "أفريل", "ماي", "جوان",
@@ -236,29 +266,28 @@
             updateDays(); // Update days when month changes
         }
 
-        function updateDays() {
-    const listContainer = document.querySelector('.list-container');
-    const permaItems = document.querySelectorAll('.day-row');
-
-    // Hide all perma items initially
-    permaItems.forEach(item => {
-        item.style.display = 'none';
-    });
-
-    // Show perma items that match the current month and year
-    const currentMonthIndex = currentMonth - 1; // Convert to zero-based index for comparison
-    permaItems.forEach(item => {
-        const dateDebut = item.querySelector('.day-date').textContent.trim(); // Assuming date is in "YYYY-MM-DD" format
-        const itemMonth = new Date(dateDebut).getMonth(); // Get month (zero-based index) from date
-        const itemYear = new Date(dateDebut).getFullYear();
-        if (itemMonth === currentMonthIndex && itemYear === currentYear) {
-            item.style.display = 'flex';
-        }
-    });
-}
-
         // Function to update the list of days
-       
+
+        function updateDays() {
+            const listContainer = document.querySelector('.list-container');
+            const permaItems = document.querySelectorAll('.day-row');
+
+            // Hide all perma items initially
+            permaItems.forEach(item => {
+                item.style.display = 'none';
+            });
+
+            // Show perma items that match the current month and year
+            const currentMonthIndex = currentMonth - 1; // Convert to zero-based index for comparison
+            permaItems.forEach(item => {
+                const dateDebut = item.querySelector('.day-date').textContent.trim(); // Assuming date is in "YYYY-MM-DD" format
+                const itemMonth = new Date(dateDebut).getMonth(); // Get month (zero-based index) from date
+                const itemYear = new Date(dateDebut).getFullYear();
+                if (itemMonth === currentMonthIndex && itemYear === currentYear) {
+                    item.style.display = 'flex';
+                }
+            });
+        }
 
         // Function to change month (prev or next)
         function changeMonth(direction) {
@@ -278,30 +307,26 @@
 
         // Initial update
         updateMonthYear();
-        function numbre_of_worker_and_redirect(permaId,perma_nbc,perma_day, perma_month, perma_year){
-            var today_month=new Date().getMonth()+1
-            console.log(today_month)
-            console.log(perma_month)
-            if (((perma_month  === today_month) && (perma_day > currentDay)) || (perma_month > today_month)  ){
-                var pop=document.getElementById("popup")
-                pop.style.display='block'
+
+        function numbre_of_worker_and_redirect(permaId, perma_nbc, perma_day, perma_month, perma_year) {
+            var today_month = new Date().getMonth() + 1;
+
+            if (((perma_month === today_month) && (perma_day > new Date().getDate())) || (perma_month > today_month)) {
+                var pop = document.getElementById("popup");
+                pop.style.display = 'block';
                 var input = document.getElementById("perma_id");
-                input.value=permaId;
-                var num=document.getElementById('numWorkers')
-                num.value=perma_nbc;
+                input.value = permaId;
+                var num = document.getElementById('numWorkers');
+                num.value = perma_nbc;
+            } else {
+                window.location.href = `/afficher_affectation?month=${perma_month}&year=${perma_year}`;
             }
-            else
-            {
-                 
-             window.location.href =window.location.href = `/afficher_affectation?month=${perma_month}&year=${perma_year}`;
-             
-            }
-        }
-        function hidePopup(){
-            var pop=document.getElementById("popup")
-            pop.style.display='none'
         }
 
+        function hidePopup() {
+            var pop = document.getElementById("popup");
+            pop.style.display = 'none';
+        }
     </script>
 </body>
 </html>

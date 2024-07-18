@@ -1,4 +1,3 @@
-<!-- view_permanence.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -9,11 +8,6 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
             direction: rtl; /* Ensures text is aligned right to left */
         }
@@ -21,7 +15,7 @@
             background-color: #007bff;
             color: #fff;
             padding: 10px;
-            text-align: center; /* Fixed typo from "centre" to "center" */
+            text-align: center;
             font-size: 18px;
             width: 100%;
             position: fixed;
@@ -43,6 +37,9 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            width: 90%; /* Adjusted width for responsiveness */
+            max-width: 1200px; /* Maximum width for large screens */
+            margin: 70px auto; /* Center align and add top margin to avoid overlap with fixed navbar */
         }
 
         h1 {
@@ -64,8 +61,10 @@
         th {
             background-color: #f4f4f4;
         }
+
         .btn {
-            display: inline-block;
+            display: block;
+            width: 100%;
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
@@ -74,23 +73,92 @@
             text-decoration: none;
             border-radius: 4px;
             transition: background-color 0.3s;
-            margin-top: 50px;
+            margin-top: 20px;
             border: none;
+            max-width: 300px; /* Limit button width on larger screens */
+            margin-left: auto;
+            margin-right: auto;
         }
-    
+
         .btn:hover {
             background-color: #0056b3;
         }
-        .cadre{
-            display : flex;
-            align-items : space-evenly;
-            flex-direction: row-reverse ;
+
+        .cadre {
+            overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+        }
+
+        /* Media query for screens smaller than 768px (like phones) */
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 95%; /* Adjusted width for smaller screens */
+                margin-top: 20px; /* Add space at the top on smaller screens */
+            }
+
+            .btn {
+                width: auto; /* Reset button width to auto for smaller screens */
+                max-width: 100%; /* Ensure button width doesn't exceed screen width */
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
+            .cadre {
+                overflow-x: auto; /* Ensure horizontal scrolling on smaller screens */
+            }
+            
+            /* Adjust table styles for smaller screens */
+            table {
+                font-size: 9px; /* Decrease font size for better readability on small screens */
+            }
+            
+            th, td {
+                padding: 8px; /* Decrease padding for better fit on small screens */
+            }   
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between; /* Aligne les boutons avec un espace entre eux */
+            width: 100%; /* Occupe toute la largeur disponible */
+            max-width: 600px; /* Limite la largeur pour une meilleure lisibilité */
+            margin-top: 20px; /* Marge supérieure pour l'espace */
+        }
+        
+        .btn-group form {
+            flex: 1; /* Les formulaires prennent tout l'espace disponible */
+            margin: 0 5px; /* Marge horizontale entre les formulaires */
+        }
+        
+        .btn-group button {
+            width: 100%; /* Boutons prenant toute la largeur du formulaire */
+            padding: 10px; /* Espacement interne des boutons */
+            background-color: #007bff; /* Couleur de fond des boutons */
+            color: white; /* Couleur du texte */
+            border: none; /* Pas de bordure */
+            border-radius: 5px; /* Coins arrondis */
+            cursor: pointer; /* Curseur de type pointer */
+        }
+        
+        .btn-group button:hover {
+            background-color: #0056b3; /* Couleur de fond au survol */
+        }
+        
+        .file{
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            border: none;
+            max-width: 300px; /* Limit button width on larger screens */
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
-    
 </head>
 <body>
-    
     <div class="homenavbar">
         <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
     </div>
@@ -114,14 +182,14 @@
                             <td>{{ cadre.nom }}</td>
                             <td>{{ cadre.prenom }}</td>
                             <td>{{ cadre.poste }}</td>
-                            <td> <a href = "mailto:{{cadre.email}}" >{{ cadre.email }}</a></td>
+                            <td><a href="mailto:{{ cadre.email }}">{{ cadre.email }}</a></td>
                             <td>
                                 {% if cadre.active %}
                                     <a href="{% url 'modifier cadre' cadre.id %}">تعديل الإطار</a>
-                                    <a href="{% url 'masque cadre' cadre.id %}" style="margin-right : 30px;">إخفاء الإطار</a>
+                                    <a href="{% url 'masque cadre' cadre.id %}" style="margin-right: 10px;">إخفاء الإطار</a>
                                 {% else %}
                                     <a href="{% url 'modifier cadre' cadre.id %}">تعديل الإطار</a>
-                                    <a href="{% url 'desmasque cadre' cadre.id %}" style="margin-right: 30px;">إظهار الإطار</a>
+                                    <a href="{% url 'desmasque cadre' cadre.id %}" style="margin-right: 10px;">إظهار الإطار</a>
                                 {% endif %}
                             </td>
                         </tr>
@@ -130,26 +198,36 @@
             </table>
         </div>
         
-        <a href="{% url 'ajouter cadre' %}" class="btn">إضافة إطار جديد</a>
-        <a href="{% url 'afficher liste' %}?filter=active" class="btn">عرض النشطين</a>
-        <a href="{% url 'afficher liste' %}?filter=inactive" class="btn">عرض غير النشطين</a>
+        <div class="btn-group">
+            <form method="get" action="{% url 'ajouter cadre' %}">
+                <button type="submit">إضافة إطار جديد</button>
+            </form>
+            <form method="get" action="{% url 'afficher liste' %}">
+                <button type="submit" name="filter" value="active">عرض النشطين</button>
+            </form>
+            <form method="get" action="{% url 'afficher liste' %}">
+                <button type="submit" name="filter" value="inactive">عرض غير النشطين</button>
+            </form>
+        </div>
+        
         <button class="btn" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="file" name="excel_file">
-            <button type="submit" class ="btn">Upload Excel</button>
+            <div class="form-group">
+                <label for="excel_file">تحميل ملف Excel:</label>
+                <input type="file" name="excel_file" id="excel_file" class="file" accept=".xlsx">
+            </div>
+            <button type="submit" class="btn"> Excel تحميل </button>
         </form>
     </div>
     <script>
         function sendEmail() {
-            // Les adresses e-mail devraient être passées côté client via une balise cachée ou similaire
-            var emails = "{{ email_list }}"; // Remplir avec les e-mails depuis Django
-            var subject = "Votre sujet ici";
-            var body = "Votre message ici";
+            var emails = "{{ email_list }}"; // Replace with actual email list from Django
+            var subject = "Your subject here";
+            var body = "Your message here";
             var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
             window.location.href = mailto_link;
         }
     </script>
-    
 </body>
 </html>

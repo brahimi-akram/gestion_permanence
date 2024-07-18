@@ -20,11 +20,12 @@
             background-color: #007bff;
             color: #fff;
             padding: 10px;
-            text-align: center; /* Fixed typo from "centre" to "center" */
+            text-align: center;
             font-size: 18px;
             width: 100%;
             position: fixed;
             top: 0;
+            z-index: 1000; /* Ensure it stays on top */
         }
         .homenavbar a {
             color: #fff;
@@ -36,7 +37,7 @@
             text-decoration: underline;
         }
         h1, h2 {
-            margin-top: 70px; /* Added margin to prevent overlap with fixed navbar */
+            margin-top: 100px; /* Adjusted margin for better spacing */
         }
         .confirm-btn {
             background-color: #007bff;
@@ -86,6 +87,16 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
             margin-top: 20px;
+        }
+
+        /* Media queries for responsiveness */
+        @media only screen and (max-width: 768px) {
+            h1, h2 {
+                margin-top: 40px; /* Adjust margin for smaller screens */
+            }
+            .container {
+                width: 90%; /* Adjust container width for smaller screens */
+            }
         }
     </style>
 </head>
