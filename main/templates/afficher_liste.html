@@ -135,6 +135,10 @@
         .btn-group button:hover {
             background-color: #0056b3; /* Couleur de fond plus sombre au survol */
         }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         
         .file {
             display: block;
@@ -202,6 +206,7 @@
         .lien{
             padding-top: 10px;
         }
+        
     </style>
 </head>
 <body>
@@ -260,12 +265,13 @@
         
         <button class="btn" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
         <form method="post" enctype="multipart/form-data">
+            {% csrf_token %} 
             <label class="custom-file-upload">
                 <span>اختر ملفًا</span>
-                <input type="file" name="excel_file">
+                <input type="file" name="excel_file" id="file-input">
             </label>
-            <button type="submit" class="btn"> Excel تحميل </button>
-        </form>
+            <button type="submit" class="btn" id="submit-button" disabled>تأكيد اختيار الملف</button>
+        </form>
     </div>
     
     <script>
@@ -276,6 +282,14 @@
             var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
             window.location.href = mailto_link;
         }
+        document.getElementById('file-input').addEventListener('change', function() {
+            var submitButton = document.getElementById('submit-button');
+            if (this.files.length > 0) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        });
     </script>
 </body>
 </html>

@@ -34,7 +34,7 @@ def afficher_liste (request) :
     if request.method == 'GET':
         filter_param = request.GET.get('filter')
     
-        emails = Cadre.objects.values_list('email', flat=True)
+        emails = Cadre.objects.filter(active=True).values_list('email', flat=True)
         email_list = ','.join(emails)
         if filter_param == 'inactive':
             cadres = Cadre.objects.filter(active=False)

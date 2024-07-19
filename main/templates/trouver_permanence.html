@@ -149,6 +149,23 @@
             justify-content: center;
             align-items: center;
         }
+        .btn {
+            display: inline-block;
+            padding: 9px 9px;
+            font-size: 12px;
+            color: #fff;
+            background-color: #007bff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            width: 100px;
+            margin-right: 30px;
+        }
+    
+        .btn:hover {
+            background-color: #0056b3;
+        }
 
         .close-btn {
             color: #aaa;
@@ -229,7 +246,7 @@
                         {{ perm.nom }}
                     </div>
                     <div class="actions">
-                        <button onclick="numbre_of_worker_and_redirect({{ perm.id }}, {{ perm.nombre_cadre }}, {{ perm.date_debut.day }}, {{ perm.date_debut.month }}, {{ perm.date_debut.year }})">مداومة &#128203;</button>
+                        <button onclick="numbre_of_worker_and_redirect({{ perm.id }}, {{ perm.nombre_cadre }}, {{ perm.date_debut.day }}, {{ perm.date_debut.month }}, {{ perm.date_debut.year }})" class="btn">مداومة &#128203;</button>
                     </div>
                 </div>
             {% endfor %}

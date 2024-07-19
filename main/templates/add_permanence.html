@@ -12,9 +12,28 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             direction: rtl; /* Ensures text is aligned right to left */
+        }
+        .homenavbar {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+        .homenavbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        .homenavbar a:hover {
+            text-decoration: underline;
         }
         .form-container {
             max-width: 600px;
@@ -23,6 +42,9 @@
             border: 1px solid #ddd;
             border-radius: 10px;
             text-align: center;
+            background-color: white; /* Ajout d'un fond blanc */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ajout d'une ombre */
+            margin-top: 60px; /* Added margin to avoid overlap with navbar */
         }
         .form-group {
             margin-top: 15px;
@@ -52,11 +74,11 @@
             border-radius: 10px;
             box-sizing: border-box;
             text-align: center;
-            background-color: #f4f1f1;
+            background-color: white;
         }
         .form-group input[type="submit"] {
             background-color: #4c77af;
-            color: white;
+            color: blue;
             border: none;
             cursor: pointer;
             width: 100%; /* Full width for submit button */
@@ -67,9 +89,35 @@
         .form-group input[type="submit"]:hover {
             background-color: #3a47d8;
         }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            border: none;
+            max-width: 300px; /* Limiter la largeur du bouton pour les grands écrans */
+            margin-left: auto;
+            margin-right: auto;
+            cursor: pointer; /* Change le curseur en pointeur */
+        }
+        
+        .btn:hover {
+            background-color: #0056b3; /* Couleur de fond plus sombre au survol */
+        }
+        
     </style>
 </head>
 <body>
+    <div class="homenavbar">
+        <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
+    </div>
     <div class="form-container">
         <form method="post">
             {% csrf_token %}
@@ -85,8 +133,8 @@
                 {{ form.as_p }}
             </div>
             {% endfor %}
-            <div class="form-group">
-                <button type="submit" value="Submit">إرسال</button>
+            <div class="form-group" >
+                <button type="submit" value="Submit" class = "btn">إرسال</button>
             </div>
         </form>
     </div>

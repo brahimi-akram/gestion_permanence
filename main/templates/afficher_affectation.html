@@ -15,7 +15,8 @@
             height: 100vh;
             margin: 0;
             direction: rtl; /* Ensures text is aligned right to left */
-            padding-top: 100px;
+            padding-top: 10%;
+            padding-bottom: 10%;
         }
         .homenavbar {
             background-color: #007bff;
@@ -149,8 +150,8 @@
         <button type="submit" class="confirm-btn">تأكيد</button>
     </form>
     <div style="display: flex;">
-        <button onclick ="change('all')" class = 'btn'> all </button>
-        <button onclick = "change('holidays')" class = 'btn'> holiday</button>
+        <button onclick ="change('all')" class = 'btn'>مداومة الشهرية</button>
+        <button onclick = "change('holidays')" class = 'btn'> اظهار الاعياد فقط</button>
     </div>
     <div class="container">
         
@@ -180,8 +181,8 @@
                                         <td>{{ affectation.cadre }}</td>
                                         <td>{{ affectation.cadre.poste }}</td>
                                         <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
-                                {% endfor %}
-                            </tr>
+                                    </tr>
+                        {% endfor %}
                             {% else  %}
                             <tr>
                                 <td rowspan="1">{{ day }}</td>
