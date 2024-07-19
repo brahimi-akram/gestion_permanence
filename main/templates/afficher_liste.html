@@ -174,6 +174,7 @@
             background-color: #fff;
             border-radius: 8px;
             overflow: hidden;
+            font-size: 12px;
         }
         
         table thead {
@@ -198,13 +199,16 @@
             text-align: center;
             border-bottom: 1px solid #ddd;
         }
-        
+        .lien{
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="homenavbar">
         <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
     </div>
+    
     <div class="container">
         <h1>قائمة الدوام</h1>
         <h2>الإطارات</h2>
@@ -228,11 +232,12 @@
                             <td><a href="mailto:{{ cadre.email }}">{{ cadre.email }}</a></td>
                             <td>
                                 {% if cadre.active %}
-                                    <a href="{% url 'modifier cadre' cadre.id %}">تعديل الإطار</a>
-                                    <a href="{% url 'masque cadre' cadre.id %}" style="margin-right: 10px;">إخفاء الإطار</a>
+                                    <div class="lien">  <a href="{% url 'modifier cadre' cadre.id %}" >تعديل الإطار</a> </div>
+                                    <div class="lien"> <a href="{% url 'masque cadre' cadre.id %}" style="margin-right: 10px;">إخفاء الإطار</a> </div>
+                                    
                                 {% else %}
-                                    <a href="{% url 'modifier cadre' cadre.id %}">تعديل الإطار</a>
-                                    <a href="{% url 'desmasque cadre' cadre.id %}" style="margin-right: 10px;">إظهار الإطار</a>
+                                    <div class="lien"> <a href="{% url 'modifier cadre' cadre.id %}">تعديل الإطار</a> </div>
+                                    <div class="lien"><a href="{% url 'desmasque cadre' cadre.id %}" style="margin-right: 10px;">إظهار الإطار</a></div>
                                 {% endif %}
                             </td>
                         </tr>

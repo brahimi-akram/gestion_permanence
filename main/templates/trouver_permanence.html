@@ -310,8 +310,8 @@
 
         function numbre_of_worker_and_redirect(permaId, perma_nbc, perma_day, perma_month, perma_year) {
             var today_month = new Date().getMonth() + 1;
-
-            if (((perma_month === today_month) && (perma_day > new Date().getDate())) || (perma_month > today_month)) {
+            var today_year = new Date().getFullYear();
+            if (((perma_month === today_month) && (perma_day > new Date().getDate())) || (perma_month > today_month) || perma_year > today_year) {
                 var pop = document.getElementById("popup");
                 pop.style.display = 'block';
                 var input = document.getElementById("perma_id");

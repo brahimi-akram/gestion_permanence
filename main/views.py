@@ -164,8 +164,8 @@ def add_permanence(request,id):
             
             
             print(request.POST)
-        # return JsonResponse( {"cc":permanence.nom})
         return redirect(trouver_permanence)
+
 
 
 def afficher_affectation(request):
@@ -185,24 +185,20 @@ def afficher_affectation(request):
     current_year = datetime.now().year
     years = range(current_year - 10, current_year + 10)  # Example of year range
     
-    if month and year:
-        permanences = Permanence.objects.filter(date_debut__month=month, date_debut__year=year).order_by('date_debut')
-        affectations = Affectation.objects.filter(permanence__in=permanences).order_by('permanence__date_debut')  # Assuming 'permanence' is the date field
-
-        # Group affectations by day
-        grouped_affectations = {}
-        for key, group in groupby(affectations, key=attrgetter('permanence')):
-            grouped_affectations[key] = list(group)
-
-    else:
-        grouped_affectations = {}
-
+    permanences = Permanence.objects.filter(date_debut__month=month, date_debut__year=year).order_by('date_debut')
+    
+    grouped_affectations = {}
+    for perma in permanences :
+        grouped_affectations[perma] = Affectation.objects.filter(permanence = perma)
+        
     month_name = month_names.get(month, "")  # Get the month name from the dictionary
-
     context = {
         'years': years,
         'grouped_affectations': grouped_affectations,
         'selected_month': month_name,  # Use the month name
-        'selected_year': year
+        'selected_year': year, 
+        
     }
     return render(request, 'afficher_affectation.html', context)
+
+

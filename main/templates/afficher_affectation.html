@@ -63,11 +63,35 @@
             cursor: pointer;
             border-radius: 5px;
             margin-top: 10px;
+            
         }
         .confirm-btn:hover {
             background-color: #0056b3;
         }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            border: none;
+            max-width: 300px; /* Limiter la largeur du bouton pour les grands écrans */
+            margin-left: auto;
+            margin-right: auto;
+            cursor: pointer; /* Change le curseur en pointeur */
+            margin-left: 10px;
+            
+        }
         
+        .btn:hover {
+            background-color: #0056b3; /* Couleur de fond plus sombre au survol */
+        }
         .container {
             width: 80%;
             background-color: #fff;
@@ -80,6 +104,10 @@
 
         /* Media queries for responsiveness */
         @media only screen and (max-width: 768px) {
+            body{
+                padding-top: 350px;
+                
+            }
             h1, h2 {
                 margin-top: 20px; /* Adjust margin for smaller screens */
             }
@@ -94,7 +122,7 @@
         <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
     </div>
     <h1>برنامج المداومة</h1>
-    <form action="{% url 'afficher affectation' %}" method="POST">
+    <form id="filterForm" action="{% url 'afficher affectation' %}" method="POST">
         {% csrf_token %}
         <select name="month" id="month" required>
             <option value="" disabled selected>اختر الشهر</option>
@@ -117,11 +145,19 @@
                 <option value="{{ year }}">{{ year }}</option>
             {% endfor %}
         </select>
+        <input type="hidden" id="filter" name="filter" value="all">
         <button type="submit" class="confirm-btn">تأكيد</button>
     </form>
+    <div style="display: flex;">
+        <button onclick ="change('all')" class = 'btn'> all </button>
+        <button onclick = "change('holidays')" class = 'btn'> holiday</button>
+    </div>
     <div class="container">
+        
+        
         {% if selected_month and selected_year %}
             <h2>برنامج المداومة لشهر {{ selected_month }} {{ selected_year }}</h2>
+        <div id ="all"  style = "display: block;"  >
             <div class="cadre">
                 <table>
                     <thead>
@@ -134,23 +170,97 @@
                     </thead>
                     <tbody>
                         {% for day, affectations in grouped_affectations.items %}
-                            {% for affectation in affectations %}
-                                <tr>
-                                    {% if forloop.first %}
-                                        <td rowspan="{{ affectations|length }}">{{ day }}</td>
-                                    {% endif %}
-                                    <td>{{ affectation.cadre }}</td>
-                                    <td>{{ affectation.cadre.poste }}</td>
-                                    <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
-                                </tr>
-                            {% endfor %}
+                        {% if affectations %}
+                        {% for affectation in affectations %}
+                        <tr>
+                                {% if forloop.first %} 
+                                <td rowspan="{{ affectations.count }}">{{ day }}</td>
+                                {% endif %}  
+                                         
+                                        <td>{{ affectation.cadre }}</td>
+                                        <td>{{ affectation.cadre.poste }}</td>
+                                        <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
+                                {% endfor %}
+                            </tr>
+                            {% else  %}
+                            <tr>
+                                <td rowspan="1">{{ day }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {% endif %}
+                                
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div id = "holidays" style="display: none; "  >
+            <div class="cadre">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اليوم</th>
+                            <th>الاسم و اللقب</th>
+                            <th>الرتبة او الوظيفة</th>
+                            <th>الساعات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day, affectations in grouped_affectations.items %}
+                        {% if day.description  == True %}
+                        {% if affectations %}
+                        {% for affectation in affectations %}
+                        <tr>
+                                {% if forloop.first %} 
+                                <td rowspan="{{ affectations.count }}">{{ day }}</td>
+                                {% endif %}   
+                                            
+                                        <td>{{ affectation.cadre }}</td>
+                                        <td>{{ affectation.cadre.poste }}</td>
+                                        <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
+                                {% endfor %}
+                            </tr>
+                            {% else  %}
+                            <tr>
+                                <td rowspan="1">{{ day }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            {% endif %}
+                        {% endif %}
+                                
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+       
         {% else %}
             <p>لم يتم تحديد شهر وسنة.</p>
         {% endif %}
     </div>
+
+    <script>
+      function change (id)
+      {
+        var display = document.getElementById(id)
+            console.log(display)
+            display.style.display ='block';
+        if (id === 'all')
+        {
+            var hide = document.getElementById('holidays');
+
+        }
+        else{
+            var hide = document.getElementById('all');
+        }
+        hide.style.display  = 'none';
+      }
+      
+    </script>
+    
 </body>
 </html>
