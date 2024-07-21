@@ -13,10 +13,11 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            margin: auto;
             direction: rtl; /* Ensures text is aligned right to left */
-            padding-top: 10%;
-            padding-bottom: 10%;
+            margin-top: 8%;
+            padding-top: 2%;
+            
         }
         .homenavbar {
             background-color: #007bff;
@@ -56,7 +57,8 @@
         th {
             background-color: #f4f4f4;
         }
-        .confirm-btn {
+        
+        .confirm-btn, .btn {
             background-color: #007bff;
             color: white;
             border: none;
@@ -64,34 +66,9 @@
             cursor: pointer;
             border-radius: 5px;
             margin-top: 10px;
-            
         }
-        .confirm-btn:hover {
+        .confirm-btn:hover, .btn:hover {
             background-color: #0056b3;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007bff;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-            border: none;
-            max-width: 300px; /* Limiter la largeur du bouton pour les grands écrans */
-            margin-left: auto;
-            margin-right: auto;
-            cursor: pointer; /* Change le curseur en pointeur */
-            margin-left: 10px;
-            
-        }
-        
-        .btn:hover {
-            background-color: #0056b3; /* Couleur de fond plus sombre au survol */
         }
         .container {
             width: 80%;
@@ -102,12 +79,45 @@
             text-align: center;
             margin-top: 20px;
         }
-
+        #confirm-btn, #btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-left: 9px;
+        }
+        #confirm-btn:hover, #btn:hover {
+            background-color: #0056b3;
+        }
+        @media print {
+            .no-print {
+                display: none !important; /* Cache les éléments avec la classe 'no-print' */
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+        }
+        @page {
+            size: auto;
+            margin: 0mm;
+        }
+        
         /* Media queries for responsiveness */
         @media only screen and (max-width: 768px) {
-            body{
+            body {
                 padding-top: 350px;
-                
             }
             h1, h2 {
                 margin-top: 20px; /* Adjust margin for smaller screens */
@@ -120,12 +130,12 @@
 </head>
 <body>
     <div class="homenavbar">
-        <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
+        <a href="{% url 'home' %}" class="no-print">الصفحة الرئيسية</a> 
     </div>
     <h1>برنامج المداومة</h1>
-    <form id="filterForm" action="{% url 'afficher affectation' %}" method="POST">
+    <form id="filterForm" action="{% url 'afficher affectation' %}" method="POST" class="no-print">
         {% csrf_token %}
-        <select name="month" id="month" required>
+        <select name="month" id="month" required class="no-print">
             <option value="" disabled selected>اختر الشهر</option>
             <option value="1">جانفي</option>
             <option value="2">فيفري</option>
@@ -140,7 +150,7 @@
             <option value="11">نوفمبر</option>
             <option value="12">ديسمبر</option>
         </select>
-        <select name="year" id="year" required>
+        <select name="year" id="year" required class="no-print">
             <option value="" disabled selected>اختر السنة</option>
             {% for year in years %}
                 <option value="{{ year }}">{{ year }}</option>
@@ -150,118 +160,125 @@
         <button type="submit" class="confirm-btn">تأكيد</button>
     </form>
     <div style="display: flex;">
-        <button onclick ="change('all')" class = 'btn'>مداومة الشهرية</button>
-        <button onclick = "change('holidays')" class = 'btn'> اظهار الاعياد فقط</button>
+        <button onclick="change('all')" id='btn' class="no-print">مداومة الشهرية</button>
+        <button onclick="change('holidays')" id='btn' class="no-print"> اظهار الاعياد فقط</button>
     </div>
     <div class="container">
-        
-        
         {% if selected_month and selected_year %}
             <h2>برنامج المداومة لشهر {{ selected_month }} {{ selected_year }}</h2>
-        <div id ="all"  style = "display: block;"  >
-            <div class="cadre">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>اليوم</th>
-                            <th>الاسم و اللقب</th>
-                            <th>الرتبة او الوظيفة</th>
-                            <th>الساعات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for day, affectations in grouped_affectations.items %}
-                        {% if affectations %}
-                        {% for affectation in affectations %}
-                        <tr>
-                                {% if forloop.first %} 
-                                <td rowspan="{{ affectations.count }}">{{ day }}</td>
-                                {% endif %}  
-                                         
+            <div id="all" style="display: block;">
+                <div class="cadre">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اليوم</th>
+                                <th>الاسم و اللقب</th>
+                                <th>الرتبة او الوظيفة</th>
+                                <th>الساعات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day, affectations in grouped_affectations.items %}
+                                {% if affectations %}
+                                    {% for affectation in affectations %}
+                                    <tr>
+                                        {% if forloop.first %} 
+                                        <td rowspan="{{ affectations.count }}">{{ day }}</td>
+                                        {% endif %}  
                                         <td>{{ affectation.cadre }}</td>
                                         <td>{{ affectation.cadre.poste }}</td>
                                         <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
                                     </tr>
-                        {% endfor %}
-                            {% else  %}
-                            <tr>
-                                <td rowspan="1">{{ day }}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            {% endif %}
-                                
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                    {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td rowspan="1">{{ day }}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <button class="btn no-print" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
+                    <button class="no-print" onclick="window.print()" id ="btn">طباعة</button>
+                </div>
             </div>
-        </div>
-        <div id = "holidays" style="display: none; "  >
-            <div class="cadre">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>اليوم</th>
-                            <th>الاسم و اللقب</th>
-                            <th>الرتبة او الوظيفة</th>
-                            <th>الساعات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for day, affectations in grouped_affectations.items %}
-                        {% if day.description  == True %}
-                        {% if affectations %}
-                        {% for affectation in affectations %}
-                        <tr>
-                                {% if forloop.first %} 
-                                <td rowspan="{{ affectations.count }}">{{ day }}</td>
-                                {% endif %}   
-                                            
-                                        <td>{{ affectation.cadre }}</td>
-                                        <td>{{ affectation.cadre.poste }}</td>
-                                        <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
+            <div id="holidays" style="display: none;">
+                <div class="cadre">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اليوم</th>
+                                <th>الاسم و اللقب</th>
+                                <th>الرتبة او الوظيفة</th>
+                                <th>الساعات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day, affectations in grouped_affectations.items %}
+                                {% if day.description == True %}
+                                {% if affectations %}
+                                {% for affectation in affectations %}
+                                <tr>
+                                    {% if forloop.first %} 
+                                    <td rowspan="{{ affectations.count }}">{{ day }}</td>
+                                    {% endif %}   
+                                    <td>{{ affectation.cadre }}</td>
+                                    <td>{{ affectation.cadre.poste }}</td>
+                                            <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td rowspan="1">{{ day }}</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        {% endif %}
+                                {% endif %}
                                 {% endfor %}
-                            </tr>
-                            {% else  %}
-                            <tr>
-                                <td rowspan="1">{{ day }}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            {% endif %}
-                        {% endif %}
-                                
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <button class="no-print" id="btn" onclick="sendEmail_holiday()">إرسال بريد إلكتروني جماعي</button>
+                    <button class="no-print" onclick="window.print()" id ="btn">Imprimer</button>
+                </div>
             </div>
-        </div>
-       
         {% else %}
             <p>لم يتم تحديد شهر وسنة.</p>
         {% endif %}
     </div>
 
     <script>
-      function change (id)
-      {
-        var display = document.getElementById(id)
-            console.log(display)
-            display.style.display ='block';
-        if (id === 'all')
-        {
-            var hide = document.getElementById('holidays');
+        function sendEmail() {
+            var emails = "{{ email_string }}"; // Utiliser la chaîne d'emails séparée par des virgules
+            var subject = "Votre sujet ici";
+            var body = "Votre message ici";
+            var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+            window.location.href = mailto_link;
+        }
 
+        function sendEmail_holiday() {
+            var emails = "{{ email_string_holidays }}"; // Utiliser la chaîne d'emails séparée par des virgules
+            var subject = "Votre sujet ici";
+            var body = "Votre message ici";
+            var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+            window.location.href = mailto_link;
         }
-        else{
-            var hide = document.getElementById('all');
+        
+        function change(id) {
+            var display = document.getElementById(id);
+            console.log(display);
+            display.style.display = 'block';
+            var hide = (id === 'all') ? document.getElementById('holidays') : document.getElementById('all');
+            hide.style.display = 'none';
         }
-        hide.style.display  = 'none';
-      }
-      
     </script>
-    
 </body>
 </html>

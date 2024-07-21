@@ -188,16 +188,26 @@ def afficher_affectation(request):
     permanences = Permanence.objects.filter(date_debut__month=month, date_debut__year=year).order_by('date_debut')
     
     grouped_affectations = {}
+    liste_email = []
+    liste_email_holiday =[]
     for perma in permanences :
-        grouped_affectations[perma] = Affectation.objects.filter(permanence = perma)
-        
+        affectations = Affectation.objects.filter(permanence=perma)
+        grouped_affectations[perma] = affectations
+        for affectation in affectations:
+            liste_email.append(affectation.cadre.email)
+            if perma.description:
+                liste_email_holiday.append(affectation.cadre.email)
+    email_string_holidays = ",".join(liste_email_holiday)
+    email_string = ",".join(liste_email)  # Convertir la liste en chaîne séparée par des virgules
     month_name = month_names.get(month, "")  # Get the month name from the dictionary
+    print(email_string_holidays)
     context = {
         'years': years,
         'grouped_affectations': grouped_affectations,
         'selected_month': month_name,  # Use the month name
         'selected_year': year, 
-        
+        'email_string': email_string,
+        'email_string_holidays':email_string_holidays
     }
     return render(request, 'afficher_affectation.html', context)
 

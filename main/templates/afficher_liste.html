@@ -256,14 +256,13 @@
                 <button type="submit">إضافة إطار جديد</button>
             </form>
             <form method="get" action="{% url 'afficher liste' %}">
-                <button type="submit" name="filter" value="active">عرض النشطين</button>
+                <button type="submit" name="filter" value="active">عرض الناشطين</button>
             </form>
             <form method="get" action="{% url 'afficher liste' %}">
-                <button type="submit" name="filter" value="inactive">عرض غير النشطين</button>
+                <button type="submit" name="filter" value="inactive">عرض الغير ناشطين</button>
             </form>
         </div>
         
-        <button class="btn" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %} 
             <label class="custom-file-upload">
@@ -275,13 +274,7 @@
     </div>
     
     <script>
-        function sendEmail() {
-            var emails = "{{ email_list }}"; // Remplacez par la liste d'emails réelle provenant de Django
-            var subject = "Votre sujet ici";
-            var body = "Votre message ici";
-            var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-            window.location.href = mailto_link;
-        }
+        
         document.getElementById('file-input').addEventListener('change', function() {
             var submitButton = document.getElementById('submit-button');
             if (this.files.length > 0) {
