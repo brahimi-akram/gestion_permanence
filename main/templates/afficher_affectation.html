@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> قائمة المداومات</title>
+    <title>قائمة المداومات</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,8 +14,8 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            direction: rtl; /* Ensures text is aligned right to left */
-            padding-top: 60px; /* Adjust padding to create space for the fixed navbar */
+            direction: rtl;
+            padding-top: 60px;
         }
         .homenavbar {
             background-color: #007bff;
@@ -26,7 +26,7 @@
             width: 100%;
             position: fixed;
             top: 0;
-            z-index: 1000; /* Ensure it stays on top */
+            z-index: 1000;
         }
         .homenavbar a {
             color: #fff;
@@ -38,24 +38,21 @@
             text-decoration: underline;
         }
         h1, h2 {
-            margin-top: 20px; /* Adjusted margin for better spacing */
+            margin-top: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
             padding: 10px;
             border: 1px solid #ccc;
             text-align: right;
         }
-
         th {
             background-color: #f4f4f4;
         }
-        
         .confirm-btn, .btn {
             background-color: #007bff;
             color: white;
@@ -92,7 +89,7 @@
         }
         @media print {
             .no-print {
-                display: none !important; /* Cache les éléments avec la classe 'no-print' */
+                display: none !important;
             }
             table {
                 width: 100%;
@@ -111,17 +108,15 @@
             size: auto;
             margin: 0mm;
         }
-        
-        /* Media queries for responsiveness */
         @media only screen and (max-width: 768px) {
             body {
                 padding-top: 350px;
             }
             h1, h2 {
-                margin-top: 20px; /* Adjust margin for smaller screens */
+                margin-top: 20px;
             }
             .container {
-                width: 90%; /* Adjust container width for smaller screens */
+                width: 90%;
             }
         }
     </style>
@@ -159,14 +154,14 @@
     </form>
     <div style="display: flex;">
         <button onclick="change('all')" id='btn' class="no-print">مداومة الشهرية</button>
-        <button onclick="change('holidays')" id='btn' class="no-print"> اظهار الاعياد فقط</button>
+        <button onclick="change('holidays')" id='btn' class="no-print">اظهار الاعياد فقط</button>
     </div>
     <div class="container">
         {% if selected_month and selected_year %}
             <h2>برنامج المداومة لشهر {{ selected_month }} {{ selected_year }}</h2>
             <div id="all" style="display: block;">
                 <div class="cadre">
-                    <table>
+                    <table id="table-all">
                         <thead>
                             <tr>
                                 <th>اليوم</th>
@@ -203,11 +198,12 @@
                 <div>
                     <button class="btn no-print" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
                     <button class="no-print" onclick="window.print()" id ="btn">طباعة</button>
+                    <button onclick="downloadTable('all')" class="btn no-print" id="download-all">تحميل بيانات المداومة بصيغة PDF</button>
                 </div>
             </div>
             <div id="holidays" style="display: none;">
                 <div class="cadre">
-                    <table>
+                    <table id="table-holidays">
                         <thead>
                             <tr>
                                 <th>اليوم</th>
@@ -227,25 +223,26 @@
                                     {% endif %}   
                                     <td>{{ affectation.cadre }}</td>
                                     <td>{{ affectation.cadre.poste }}</td>
-                                            <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
-                                        </tr>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr>
-                                            <td rowspan="1">{{ day }}</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        {% endif %}
-                                {% endif %}
+                                    <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
+                                </tr>
                                 {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td rowspan="1">{{ day }}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                {% endif %}
+                                {% endif %}
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <div>
                     <button class="no-print" id="btn" onclick="sendEmail_holiday()">إرسال بريد إلكتروني جماعي</button>
                     <button class="no-print" onclick="window.print()" id ="btn">طباعة</button>
+                    <button onclick="downloadTable('holidays')" class="btn no-print" id="download-holidays">تحميل بيانات الاعياد بصيغة PDF</button>
                 </div>
             </div>
         {% else %}
@@ -253,9 +250,15 @@
         {% endif %}
     </div>
 
+    <!-- Include jsPDF and autoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+    <!-- Include the Arabic font -->
+    <script src="path/to/your/custom-arabic-font.js"></script>
+
     <script>
         function sendEmail() {
-            var emails = "{{ email_string }}"; // Utiliser la chaîne d'emails séparée par des virgules
+            var emails = "{{ email_string }}";
             var subject = "Votre sujet ici";
             var body = "Votre message ici";
             var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
@@ -263,19 +266,36 @@
         }
 
         function sendEmail_holiday() {
-            var emails = "{{ email_string_holidays }}"; // Utiliser la chaîne d'emails séparée par des virgules
+            var emails = "{{ email_string_holidays }}";
             var subject = "Votre sujet ici";
             var body = "Votre message ici";
             var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
             window.location.href = mailto_link;
         }
-        
+
         function change(id) {
             var display = document.getElementById(id);
-            console.log(display);
             display.style.display = 'block';
             var hide = (id === 'all') ? document.getElementById('holidays') : document.getElementById('all');
             hide.style.display = 'none';
+        }
+
+        async function downloadTable(tableId) {
+            const { jsPDF } = window.jspdf;
+
+            // Create a new jsPDF instance with Arabic font
+            const doc = new jsPDF('p', 'pt', 'a4');
+            doc.addFileToVFS("noto_sans_arabic_regular.ttf", "<your base64 encoded font data here>");
+            doc.addFont("noto_sans_arabic_regular.ttf", "noto_sans_arabic", "normal");
+            doc.setFont("noto_sans_arabic");
+
+            doc.text("برنامج المداومة لشهر {{ selected_month }} {{ selected_year }}", 40, 40);
+
+            // Convert HTML table to PDF
+            doc.autoTable({ html: "#table-" + tableId, margin: { top: 60 } });
+
+            var filename = tableId === 'all' ? 'affectations.pdf' : 'holidays.pdf';
+            doc.save(filename);
         }
     </script>
 </body>
