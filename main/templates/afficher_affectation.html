@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> قائمة المداومات</title>
+    
+    <title>قائمة المداومات</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,8 +15,8 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            direction: rtl; /* Ensures text is aligned right to left */
-            padding-top: 60px; /* Adjust padding to create space for the fixed navbar */
+            direction: rtl;
+            padding-top: 60px;
         }
         .homenavbar {
             background-color: #007bff;
@@ -26,7 +27,7 @@
             width: 100%;
             position: fixed;
             top: 0;
-            z-index: 1000; /* Ensure it stays on top */
+            z-index: 1000;
         }
         .homenavbar a {
             color: #fff;
@@ -38,24 +39,21 @@
             text-decoration: underline;
         }
         h1, h2 {
-            margin-top: 20px; /* Adjusted margin for better spacing */
+            margin-top: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
             padding: 10px;
             border: 1px solid #ccc;
             text-align: right;
         }
-
         th {
             background-color: #f4f4f4;
         }
-        
         .confirm-btn, .btn {
             background-color: #007bff;
             color: white;
@@ -91,17 +89,28 @@
             background-color: #0056b3;
         }
         @media print {
+            body{
+                direction: rtl;
+                text-align: left;
+                padding: 0;
+                margin:0;
+            }
+            .homenavbar {
+                visibility: hidden;
+            }
             .no-print {
-                display: none !important; /* Cache les éléments avec la classe 'no-print' */
+                display: none !important;
             }
             table {
                 width: 100%;
                 border-collapse: collapse;
+
+
             }
             th, td {
                 border: 1px solid black;
                 padding: 8px;
-                text-align: left;
+                text-align: right;
             }
             th {
                 background-color: #f2f2f2;
@@ -111,17 +120,15 @@
             size: auto;
             margin: 0mm;
         }
-        
-        /* Media queries for responsiveness */
         @media only screen and (max-width: 768px) {
             body {
                 padding-top: 350px;
             }
             h1, h2 {
-                margin-top: 20px; /* Adjust margin for smaller screens */
+                margin-top: 20px;
             }
             .container {
-                width: 90%; /* Adjust container width for smaller screens */
+                width: 90%;
             }
         }
     </style>
@@ -159,14 +166,14 @@
     </form>
     <div style="display: flex;">
         <button onclick="change('all')" id='btn' class="no-print">مداومة الشهرية</button>
-        <button onclick="change('holidays')" id='btn' class="no-print"> اظهار الاعياد فقط</button>
+        <button onclick="change('holidays')" id='btn' class="no-print">اظهار الاعياد فقط</button>
     </div>
     <div class="container">
         {% if selected_month and selected_year %}
             <h2>برنامج المداومة لشهر {{ selected_month }} {{ selected_year }}</h2>
             <div id="all" style="display: block;">
                 <div class="cadre">
-                    <table>
+                    <table id="table-all">
                         <thead>
                             <tr>
                                 <th>اليوم</th>
@@ -203,11 +210,12 @@
                 <div>
                     <button class="btn no-print" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
                     <button class="no-print" onclick="window.print()" id ="btn">طباعة</button>
+                    <button onclick="downloadTable('all')" class="btn no-print" id="download-all">تحميل بيانات المداومة بصيغة PDF</button>
                 </div>
             </div>
             <div id="holidays" style="display: none;">
                 <div class="cadre">
-                    <table>
+                    <table id="table-holidays">
                         <thead>
                             <tr>
                                 <th>اليوم</th>
@@ -227,25 +235,26 @@
                                     {% endif %}   
                                     <td>{{ affectation.cadre }}</td>
                                     <td>{{ affectation.cadre.poste }}</td>
-                                            <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
-                                        </tr>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr>
-                                            <td rowspan="1">{{ day }}</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        {% endif %}
-                                {% endif %}
+                                    <td>{{ affectation.heure_debut|date:"H:i" }} سا - {{ affectation.heure_fin|date:"H:i" }} سا</td>
+                                </tr>
                                 {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td rowspan="1">{{ day }}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                {% endif %}
+                                {% endif %}
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <div>
                     <button class="no-print" id="btn" onclick="sendEmail_holiday()">إرسال بريد إلكتروني جماعي</button>
                     <button class="no-print" onclick="window.print()" id ="btn">طباعة</button>
+                    <button onclick="downloadTable('holidays')" class="btn no-print" id="download-holidays">تحميل بيانات الاعياد بصيغة PDF</button>
                 </div>
             </div>
         {% else %}
@@ -253,9 +262,17 @@
         {% endif %}
     </div>
 
+    <!-- Include jsPDF and autoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+    <!-- Include the Arabic font -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    {% load static %}
+    <script src="{% static 'font/Amiri-Regular-normal.js' %}"></script>
+
     <script>
         function sendEmail() {
-            var emails = "{{ email_string }}"; // Utiliser la chaîne d'emails séparée par des virgules
+            var emails = "{{ email_string }}";
             var subject = "Votre sujet ici";
             var body = "Votre message ici";
             var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
@@ -263,20 +280,163 @@
         }
 
         function sendEmail_holiday() {
-            var emails = "{{ email_string_holidays }}"; // Utiliser la chaîne d'emails séparée par des virgules
+            var emails = "{{ email_string_holidays }}";
             var subject = "Votre sujet ici";
             var body = "Votre message ici";
             var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
             window.location.href = mailto_link;
         }
-        
+
         function change(id) {
             var display = document.getElementById(id);
-            console.log(display);
             display.style.display = 'block';
             var hide = (id === 'all') ? document.getElementById('holidays') : document.getElementById('all');
             hide.style.display = 'none';
         }
+        async function downloadTable(divId) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait', // or 'landscape' based on your table layout
+                unit: 'mm',
+                format: 'a4' // You can adjust this to fit the table better
+            });
+
+            // Fetch the font file and convert to Base64
+            const fontUrl = '{% static "font/Amiri-Regular.ttf" %}'; // Adjust path as needed
+            try {
+                const response = await fetch(fontUrl);
+                if (!response.ok) throw new Error('Failed to fetch font file.');
+
+                const fontData = await response.arrayBuffer();
+                const fontBase64 = arrayBufferToBase64(fontData);
+
+                // Add font to jsPDF
+                doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
+                doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
+                doc.setFont('Amiri');
+            } catch (error) {
+                console.error('Error fetching or adding font:', error);
+                return;
+            }
+
+            doc.setFontSize(12);
+
+            // Get the content of the specified div
+            const div = document.getElementById(divId);
+            if (!div) {
+                console.error('Div not found:', divId);
+                return;
+            }
+
+            // Convert table to PDF if present
+            const table = div.querySelector('table');
+            if (table) {
+                // Reverse the column order for RTL
+                const columns = Array.from(table.querySelectorAll('thead th'))
+                                     .map(th => th.textContent)
+                                     .reverse();
+                
+                const rows = [];
+                Array.from(table.querySelectorAll('tbody tr')).forEach((row, rowIndex) => {
+                    const cells = Array.from(row.cells);
+                    let cellIndex = 0;
+                    number_of_columns=row.querySelectorAll('td').length;
+                    if (number_of_columns===3){
+                            cellIndex=2
+                    }else{
+                            cellIndex=3
+                    }
+                    cells.forEach(cell => {
+                        const rowspan = parseInt(cell.getAttribute('rowspan')) || 1;
+
+                        for (let i = 0; i < rowspan; i++) {
+                            if (!rows[rowIndex + i]) rows[rowIndex + i] = [];
+                            console.log(cell.textContent,'=',rowIndex + i,(cellIndex))
+                            rows[rowIndex + i][cellIndex] = cell.textContent; // Reverse index
+
+                            // Fill in empty cells for columns not yet filled in this row
+                            if (cellIndex>0){
+                            cellIndex--;
+                            }else{
+                                cellIndex=2
+                            }
+                        }
+
+                    });
+                });
+
+                // Add table to PDF
+                doc.autoTable({
+                    head: [columns],
+                    body: rows,
+                    styles: {
+                        font: 'Amiri',
+                        cellPadding: 2, // Reduce cell padding
+                        fontSize: 10, // Reduce font size
+                        halign: 'right',  // Align text to the right for RTL
+                        valign: 'middle',
+                        lineWidth: 0.5,
+                        lineColor: [0, 0, 0], // Border color for cells
+                        textColor:[0,0,0]
+                    },
+                    headStyles: {
+                        fillColor: [255, 255, 255], // Background color for header cells
+                        textColor: [0, 0, 0],       // Dark text color for header cells
+                        fontSize: 12, // Adjust font size for header
+                        lineWidth: 0.5,
+                        lineColor: [0, 0, 0]  // Border color for header cells
+                    },
+                    alternateRowStyles: {
+                        fillColor: [255, 255, 255] // White background for all rows
+                    },
+                    margin: { top: 10, left: 5, right: 5, bottom: 5 }, // Reduce margins
+                    pageBreak: 'avoid', // Prevent page breaks within the table
+                    startY: 10 ,// Adjust starting Y position
+                });
+            } else {
+                // If no table found, add a default message
+                doc.text('No table found in the specified div.', 10, 20);
+            }
+
+            // Save the PDF
+            doc.save('content.pdf');
+        }
+
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            let bytes = new Uint8Array(buffer);
+            let len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+    // Get the current date
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1; // Months are zero-based, so add 1
+    const currentYear = today.getFullYear();
+
+    // Set the current month as selected
+    const monthSelect = document.getElementById('month');
+    const yearSelect = document.getElementById('year');
+
+    if (monthSelect) {
+        monthSelect.value = currentMonth;
+    }
+
+    if (yearSelect) {
+        // Ensure the current year is in the options
+        const options = yearSelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value == currentYear) {
+                yearSelect.value = currentYear;
+                break;
+            }
+        }
+    }
+});
     </script>
 </body>
 </html>

@@ -1,16 +1,10 @@
-
-from django.forms import formset_factory
-from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
 import pandas as pd
-from django.shortcuts import  get_object_or_404, render, redirect
+from django.shortcuts import render, redirect
 from .forms import *
 from .models import *
 from datetime import datetime
 from .utils import *
-from itertools import groupby
-from operator import attrgetter
-
 
 # Create your views here.
 def ajouter_cader (request):
