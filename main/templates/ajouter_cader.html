@@ -8,6 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            color: #000000;
             background-color: #f0f0f0;
             display: flex;
             flex-direction: column;
@@ -18,7 +19,7 @@
             direction: rtl; /* Ensures text is aligned right to left */
         }
         .homenavbar {
-            background-color: #007bff;
+            background-color: #000000;
             color: #fff;
             padding: 10px;
             text-align: center; /* Fixed typo from "centre" to "center" */
@@ -40,6 +41,7 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
+            border: 1px solid ;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
@@ -54,7 +56,7 @@
             font-size: 16px;
             margin-bottom: 10px;
             width: 80%;
-            border: 1px solid #ccc;
+            border: 1px solid #474747;
             border-radius: 4px;
             text-align: right; /* Align text to the right for RTL */
         }
@@ -63,21 +65,21 @@
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
-            background-color: #007bff;
+            background-color: #52a35d;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #0a5001;
         }
         .btn {
             display: inline-block;
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
-            background-color: #007bff;
+            background-color: #52a35d;
             text-align: center;
             text-decoration: none;
             border-radius: 4px;
@@ -85,7 +87,7 @@
         }
     
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #086e1e;
         }
     </style>
 </head>
@@ -94,7 +96,7 @@
     <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
     </div>
     <div class="container">
-        <h1>إضافة إطار</h1>
+        <h1><strong>إضافة إطار</strong></h1>
         <form method="POST" action ="">
             {% csrf_token %}
             <input type="text" name="nom" placeholder="الاسم" required>
@@ -103,7 +105,7 @@
             <input type="email" name="email" placeholder="البريد الإلكتروني" required>
             <div>
                 <button type="submit">إضافة شخص</button>
-                <a href="{% url 'afficher liste' %}" class="btn">عرض القائمة</a>
+                <a href="{% url 'afficher liste' %}" class="btn">عودة الى القائمة</a>
             </div>
         </form>
     </div>

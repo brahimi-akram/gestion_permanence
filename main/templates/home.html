@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -18,7 +18,7 @@
             padding-top: 60px; /* To avoid content hiding behind the navbar */
         }
         .homenavbar {
-            background-color: #007bff;
+            background-color: #0a0a0a;
             color: #fff;
             padding: 10px;
             text-align: center;
@@ -27,6 +27,9 @@
             position: fixed;
             top: 0;
             z-index: 1000; /* Ensure the navbar is on top */
+            display : flex;
+            justify-content: center;
+            align-items: center;
         }
         .homenavbar a {
             color: #fff;
@@ -53,29 +56,38 @@
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
-            background-color: #007bff;
+            background-color: #52a35d;
             text-align: center;
             text-decoration: none;
             border-radius: 4px;
             transition: background-color 0.3s;
             border: none; /* Remove border from buttons */
-            width: 200px; /* Ensure buttons are of equal width */
+            width: 300px; /* Ensure buttons are of equal width */
+            height: 170px;
+            border-radius: 10px;
         }
     
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #245326;
+        }
+
+        .logo {
+            width: 80px;  /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
         }
       
     </style>
+    {% load static %}
 </head>
 <body>
     <div class="homenavbar">
+        <img src="{% static 'images/logo.svg' %}" alt="Logo" class="logo">
         <a href="{% url 'home' %}">الصفحة الرئيسية</a> 
     </div>
     <div class="navbar">
-        <a href="{% url 'afficher liste' %}?filter=active"><button class="btn">عرض الإطارات</button></a>
-        <a href="{% url 'trouver permanence' %}"><button class="btn">انشاء دوام</button></a>
-        <a href="{% url 'afficher affectation' %}"><button class="btn">عرض قائمة الدوام</button></a>
+        <a href="{% url 'afficher liste' %}?filter=active"><button class="btn">&#128101; عرض الإطارات </button></a>
+        <a href="{% url 'trouver permanence' %}"><button class="btn">&#10010; انشاء دوام </button></a>
+        <a href="{% url 'afficher affectation' %}"><button class="btn">&#x1F4D1; عرض قائمة الدوام</button></a>
     </div>
 </body>
 </html>
