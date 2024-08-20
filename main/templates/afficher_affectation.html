@@ -170,7 +170,7 @@
     </div>
     <div class="container">
         {% if selected_month and selected_year %}
-            <h2>برنامج المداومة لشهر {{ selected_month }} {{ selected_year }}</h2>
+            <h2 id="pdfTitle">برنامج المداومة لشهر {{ selected_month_name }} {{ selected_year }}</h2>
             <div id="all" style="display: block;">
                 <div class="cadre">
                     <table id="table-all">
@@ -208,9 +208,9 @@
                     </table>
                 </div>
                 <div>
-                    <button class="btn no-print" onclick="sendEmail()">إرسال بريد إلكتروني جماعي</button>
+                    <button class="btn no-print" onclick="handleButtonClick(1)">إرسال بريد إلكتروني جماعي</button>
                     <button class="no-print" onclick="window.print()" id ="btn">طباعة</button>
-                    <button onclick="downloadTable('all')" class="btn no-print" id="download-all">تحميل بيانات المداومة بصيغة PDF</button>
+                    <button onclick="downloadTable('all',1)" class="btn no-print" id="download-all">تحميل بيانات المداومة بصيغة PDF</button>
                 </div>
             </div>
             <div id="holidays" style="display: none;">
@@ -252,9 +252,9 @@
                     </table>
                 </div>
                 <div>
-                    <button class="no-print" id="btn" onclick="sendEmail_holiday()">إرسال بريد إلكتروني جماعي</button>
+                    <button class="no-print" id="btn" onclick="handleButtonClick(0)">إرسال بريد إلكتروني جماعي</button>
                     <button class="no-print" onclick="window.print()" id ="btn">طباعة</button>
-                    <button onclick="downloadTable('holidays')" class="btn no-print" id="download-holidays">تحميل بيانات الاعياد بصيغة PDF</button>
+                    <button onclick="downloadTable('holidays',1)" class="btn no-print" id="download-holidays">تحميل بيانات الاعياد بصيغة PDF</button>
                 </div>
             </div>
         {% else %}
@@ -271,20 +271,34 @@
     <script src="{% static 'font/Amiri-Regular-normal.js' %}"></script>
 
     <script>
-        function sendEmail() {
-            var emails = "{{ email_string }}";
-            var subject = "Votre sujet ici";
-            var body = "Votre message ici";
-            var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-            window.location.href = mailto_link;
-        }
+        
+        async function handleButtonClick(typeValue) {
+            if (typeValue === 1){
+                await downloadTable('all',0)
+            }else{
 
-        function sendEmail_holiday() {
-            var emails = "{{ email_string_holidays }}";
-            var subject = "Votre sujet ici";
-            var body = "Votre message ici";
-            var mailto_link = "mailto:" + emails + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-            window.location.href = mailto_link;
+                await downloadTable('holidays',0)
+            }
+
+            fetch("{% url 'mailing' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: typeValue,
+                    month: document.getElementById('month').value,
+                    year: "{{selected_year}}"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('تم ارسال البريد')
+            })
+            .catch((error) => {
+                console.error('حاول مرة اخرى', error);
+            });
         }
 
         function change(id) {
@@ -293,7 +307,7 @@
             var hide = (id === 'all') ? document.getElementById('holidays') : document.getElementById('all');
             hide.style.display = 'none';
         }
-        async function downloadTable(divId) {
+        async function downloadTable(divId,isdownload) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({
                 orientation: 'portrait', // or 'landscape' based on your table layout
@@ -327,6 +341,11 @@
                 console.error('Div not found:', divId);
                 return;
             }
+            const h2Title = document.getElementById('pdfTitle');
+            if (h2Title) {
+                doc.setFontSize(16); // Set a larger font size for the title
+                doc.text(h2Title.textContent, 105, 20, { align: 'center' }); // Centered title
+            }
 
             // Convert table to PDF if present
             const table = div.querySelector('table');
@@ -351,7 +370,6 @@
 
                         for (let i = 0; i < rowspan; i++) {
                             if (!rows[rowIndex + i]) rows[rowIndex + i] = [];
-                            console.log(cell.textContent,'=',rowIndex + i,(cellIndex))
                             rows[rowIndex + i][cellIndex] = cell.textContent; // Reverse index
 
                             // Fill in empty cells for columns not yet filled in this row
@@ -391,7 +409,7 @@
                     },
                     margin: { top: 10, left: 5, right: 5, bottom: 5 }, // Reduce margins
                     pageBreak: 'avoid', // Prevent page breaks within the table
-                    startY: 10 ,// Adjust starting Y position
+                    startY: 30 ,// Adjust starting Y position
                 });
             } else {
                 // If no table found, add a default message
@@ -399,7 +417,31 @@
             }
 
             // Save the PDF
-            doc.save('content.pdf');
+
+            const fileName = h2Title ? h2Title.textContent : 'document';
+
+            if (isdownload){
+                doc.save(`${fileName}`.pdf);
+            }else{
+
+                const pdfBlob = doc.output('blob');
+                
+                // Send the Blob to the server
+                try {
+                    const formData = new FormData();
+                    formData.append('file', pdfBlob, `${fileName}.pdf`);
+                    
+                    const serverResponse = await fetch('/save-pdf/', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!serverResponse.ok) throw new Error('Failed to save PDF to the server.');
+                    console.log('PDF saved successfully on the server.');
+                } catch (error) {
+                    console.error('Error saving PDF to the server:', error);
+                }
+            }
         }
 
         function arrayBufferToBase64(buffer) {
@@ -414,29 +456,32 @@
 
         document.addEventListener('DOMContentLoaded', function () {
     // Get the current date
-    const today = new Date();
-    const currentMonth = today.getMonth() + 1; // Months are zero-based, so add 1
-    const currentYear = today.getFullYear();
+            const today = new Date();
+            const currentMonth = today.getMonth() + 1; // Months are zero-based, so add 1
+            const currentYear = today.getFullYear();
 
-    // Set the current month as selected
-    const monthSelect = document.getElementById('month');
-    const yearSelect = document.getElementById('year');
-
-    if (monthSelect) {
-        monthSelect.value = currentMonth;
-    }
-
-    if (yearSelect) {
-        // Ensure the current year is in the options
-        const options = yearSelect.options;
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].value == currentYear) {
-                yearSelect.value = currentYear;
-                break;
+            // Set the current month as selected
+            const monthSelect = document.getElementById('month');
+            const yearSelect = document.getElementById('year');
+            var myVar = {% if selected_month is not None %} "{{ selected_month }}" {% else %} null {% endif %};
+            if (myVar) {
+                console.log(myVar)
+                monthSelect.value=myVar
+            }else{
+                monthSelect.value = currentMonth
             }
-        }
-    }
-});
+
+            if (yearSelect.value === "") {
+                // Ensure the current year is in the options
+                const options = yearSelect.options;
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].value == currentYear) {
+                        yearSelect.value = currentYear;
+                        break;
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

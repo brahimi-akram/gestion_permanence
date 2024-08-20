@@ -13,4 +13,6 @@ urlpatterns = [
     path('trouver_permanence/',views.trouver_permanence, name='trouver permanence'),
     path('add_affectation/<int:id>/',views.add_permanence, name='add permanence'),
     path('afficher_affectation/', views.afficher_affectation, name ='afficher affectation'),
+    path('save-pdf/', views.save_pdf, name ='save_pdf'),
+    path('mailing',views.mailing,name='mailing'),
 ]

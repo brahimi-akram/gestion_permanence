@@ -1,6 +1,10 @@
+from django.core.mail import EmailMessage
+import os
 from django.urls import reverse
 import pandas as pd
 from django.shortcuts import render, redirect
+
+from ministere_de_l_energie import settings
 from .forms import *
 from .models import *
 from datetime import datetime
@@ -194,11 +198,11 @@ def afficher_affectation(request):
     email_string_holidays = ",".join(liste_email_holiday)
     email_string = ",".join(liste_email)  # Convertir la liste en chaîne séparée par des virgules
     month_name = month_names.get(month, "")  # Get the month name from the dictionary
-    print(email_string_holidays)
     context = {
         'years': years,
         'grouped_affectations': grouped_affectations,
-        'selected_month': month_name,  # Use the month name
+        'selected_month_name': month_name,  # Use the month name
+        'selected_month' : month,
         'selected_year': year, 
         'email_string': email_string,
         'email_string_holidays':email_string_holidays
@@ -206,3 +210,76 @@ def afficher_affectation(request):
     return render(request, 'afficher_affectation.html', context)
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def save_pdf(request):
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        current_dir=os.path.join(settings.MEDIA_ROOT,file.name)
+        with open(current_dir, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'failed', 'error': 'No file uploaded'})
+
+import json
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.mail import BadHeaderError, send_mail
+from django.http import HttpResponse
+def mailing(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            type = data.get('type','')
+            month = data.get('month','')
+            year = data.get('year','')
+            
+            
+            
+            if int(type) == 1 :
+                emails = Affectation.objects.filter(
+                    permanence__date_debut__month=month,
+                    permanence__date_debut__year=year
+                ).values_list('cadre__email', flat=True).distinct()
+                print(emails)
+            else:
+                emails = Affectation.objects.filter(
+                    permanence__date_debut__month=month,
+                    permanence__date_debut__year=year,
+                    permanence__description=True
+                ).values_list('cadre__email', flat=True).distinct()
+
+            subject = 'Testing Email with Attachment'
+            message = 'This is a test email with a PDF attachment.'
+            recipient_list = emails  # Replace with actual recipients
+
+            # Create the email message
+            email = EmailMessage(
+                subject=subject,
+                body=message,
+                from_email=settings.EMAIL_HOST_USER,
+                to=recipient_list,
+            )
+
+            # Path to the PDF file
+            pdf_filename = 'برنامج المداومة لشهر جويلية 2024.pdf'
+            pdf_path = os.path.join(settings.MEDIA_ROOT, pdf_filename)
+
+            try:
+                # Open and attach the PDF file
+                with open(pdf_path, 'rb') as pdf_file:
+                    email.attach(pdf_filename, pdf_file.read(), 'application/pdf')
+
+                # Send the email
+                email.send(fail_silently=False)
+            except:
+                return JsonResponse({'status':'failed to send email'})
+        except Exception as e:
+            return JsonResponse({'status':'something went wrong'})
+                
+
+    
