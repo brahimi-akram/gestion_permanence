@@ -22,12 +22,19 @@ class Permanence (models.Model) :
         return f'{self.nom} {self.date_debut}'
     
 class Affectation (models.Model) : 
-    permanence =  models.ForeignKey(Permanence,on_delete=models.DO_NOTHING)
-    cadre = models.ForeignKey(Cadre, on_delete = models.DO_NOTHING)
+    permanence =  models.ForeignKey(Permanence,on_delete=models.SET_NULL,null=True)
+    cadre = models.ForeignKey(Cadre, on_delete = models.SET_NULL,null=True)
     heure_debut = models.TimeField()
     heure_fin = models.TimeField()
     def __str__(self) : 
         return f'{self.permanence} {self.cadre} {self.heure_debut} {self.heure_fin}'
     
+from django.core.exceptions import ValidationError
+class Mail(models.Model):
+    objet = models.CharField(max_length=100)
+    corpse = models.TextField()
 
-    
+    def save(self, *args , **kwargs):
+        if Mail.objects.exists() and not self.pk : 
+            raise ValidationError('Only one email template can be created.')
+        super().save(*args,**kwargs)

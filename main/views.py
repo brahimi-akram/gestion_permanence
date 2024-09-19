@@ -48,13 +48,15 @@ def afficher_liste (request) :
             df = pd.read_excel(excel_file)
             
             for index, row in df.iterrows():
-                Cadre.objects.create(
-                    nom=row['nom'],
-                    prenom=row['prenom'],
-                    poste=row['poste'],
-                    email=row['email']
-                )
-            
+                try:
+                    Cadre.objects.create(
+                        nom=row['الاسم'],
+                        prenom=row['اللقب'],
+                        poste=row['المنصب'],
+                        email=row['البريد الالكتروني']
+                    )
+                except:
+                    pass
             return redirect(afficher_liste)  # Rediriger vers la vue 'afficher_liste' après l'importation
         
          
@@ -113,22 +115,26 @@ def importer_de_excel(request):
         df = pd.read_excel(excel_file)
         
         for index, row in df.iterrows():
-            Cadre.objects.create(
-                nom=row['Nom'],
-                prenom=row['Prénom'],
-                poste=row['Poste'],
-                email=row['Email']
-            )
+            try:
+                Cadre.objects.create(
+                    nom=row['الاسم'],
+                    prenom=row['اللقب'],
+                    poste=row['المنصب'],
+                    email=row['البريد الالكتروني']
+                    )
+            except:
+                    pass
         
-        employees = Cadre.objects.all()
+        Cadre.objects.all()
         return render(request, 'afficher_liste.html ', {'df': df})
     return render(request, 'afficher_liste.html')
 
 
 def trouver_permanence(request):
     if request.method=='GET':
-        
-        #create_holidays()
+        latest_object = Permanence.objects.order_by('-date_debut').first()
+        if latest_object.date_debut.year == datetime.now().date().year:
+            create_holidays()
         
         tout_permaneneces=Permanence.objects.all().order_by('date_debut')
         return render(request,"trouver_permanence.html",{'perma':tout_permaneneces})
@@ -151,7 +157,6 @@ def add_permanence(request,id):
             #forms.append(AffectationForm())
         return render(request,'add_permanence.html',{'forms':forms,'cadres':cadres})
     else:
-        print(request.POST)
         for i in range (0, permanence.nombre_cadre):
             afffectation = Affectation()
             afffectation.cadre = Cadre.objects.get(pk = request.POST.get(f'worker_{i+1}'))
@@ -226,11 +231,15 @@ def save_pdf(request):
         return JsonResponse({'status': 'failed', 'error': 'No file uploaded'})
 
 import json
-from django.core.mail import send_mail
 from django.conf import settings
 from django.core.mail import BadHeaderError, send_mail
 from django.http import HttpResponse
 def mailing(request):
+    month_names = {
+        "1": "جانفي", "2": "فيفري", "3": "مارس", "4": "أفريل",
+        "5": "ماي", "6": "جوان", "7": "جويلية", "8": "أوت",
+        "9": "سبتمبر", "10": "أكتوبر", "11": "نوفمبر", "12": "ديسمبر"
+    }
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -245,18 +254,17 @@ def mailing(request):
                     permanence__date_debut__month=month,
                     permanence__date_debut__year=year
                 ).values_list('cadre__email', flat=True).distinct()
-                print(emails)
             else:
                 emails = Affectation.objects.filter(
                     permanence__date_debut__month=month,
                     permanence__date_debut__year=year,
                     permanence__description=True
                 ).values_list('cadre__email', flat=True).distinct()
-
-            subject = 'Testing Email with Attachment'
-            message = 'This is a test email with a PDF attachment.'
+            mail_obj = Mail.objects.first()
+            subject = mail_obj.objet
+            message = mail_obj.corpse
             recipient_list = emails  # Replace with actual recipients
-
+            print(emails,subject,message)
             # Create the email message
             email = EmailMessage(
                 subject=subject,
@@ -266,14 +274,13 @@ def mailing(request):
             )
 
             # Path to the PDF file
-            pdf_filename = 'برنامج المداومة لشهر جويلية 2024.pdf'
+            pdf_filename = f'برنامج المداومة لشهر {month_names[month]} 2024.pdf'
             pdf_path = os.path.join(settings.MEDIA_ROOT, pdf_filename)
 
             try:
                 # Open and attach the PDF file
                 with open(pdf_path, 'rb') as pdf_file:
                     email.attach(pdf_filename, pdf_file.read(), 'application/pdf')
-
                 # Send the email
                 email.send(fail_silently=False)
             except:

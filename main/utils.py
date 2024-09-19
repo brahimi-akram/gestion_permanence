@@ -6,7 +6,7 @@ def create_holidays():
     
     # If you want to get holidays for a specific year
     year = datetime.now().date().year
-    future_years = [year for year in range(year - 10, year + 10)]
+    future_years = [year for year in range(year + 1 , year + 3)]
     for years in future_years :
         object = Permanence.objects.filter(date_debut__year = years)
         if object.count() == 0 : 
@@ -62,19 +62,19 @@ def create_holidays():
                     name=name
                     estimated=None
                 name=name.strip()
-                same_name_instances=Permanence.objects.filter(nom__icontains=translation_dict[name])
+                same_name_instances=Permanence.objects.filter(nom__icontains=translation_dict[name],date_debut__year=years)
 
                 if same_name_instances.count()==0:
                     perma.nom=translation_dict[name.strip()]
                 elif same_name_instances.count()==1:
                     old_instance=same_name_instances[0]
-                    old_instance.nom=f'{duplicates[same_name_instances.count()]} {translation_dict[name.strip()]}'
+                    old_instance.nom=f'{duplicates[same_name_instances.count()%3]} {translation_dict[name.strip()]}'
                     old_instance.save()
-                    perma.nom=f'{duplicates[same_name_instances.count()+1]} {translation_dict[name]}'
+                    perma.nom=f'{duplicates[(same_name_instances.count()%3)+1]} {translation_dict[name]}'
                     # print(duplicates[same_name_instances.count()])
                     # print(perma.nom,same_name_instances[0].nom)
                 else:
-                    perma.nom=f'{duplicates[same_name_instances.count()+1]} {translation_dict[name]}'
+                    perma.nom=f'{duplicates[(same_name_instances.count()%3)+1]} {translation_dict[name]}'
 
                 perma.description=True
 
