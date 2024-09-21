@@ -283,6 +283,7 @@ def mailing(request):
                     email.attach(pdf_filename, pdf_file.read(), 'application/pdf')
                 # Send the email
                 email.send(fail_silently=False)
+                return JsonResponse({"success":"mail has been sent"})
             except:
                 return JsonResponse({'status':'failed to send email'})
         except Exception as e:
