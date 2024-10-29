@@ -4,7 +4,7 @@ from django.urls import reverse
 import pandas as pd
 from django.shortcuts import render, redirect
 
-from ministere_de_l_energie import settings
+from organisme import settings
 from .forms import *
 from .models import *
 from datetime import datetime

@@ -1,3 +1,3 @@
 venv/
 .env
-ENRG_*.png
+.ENRG_*.png

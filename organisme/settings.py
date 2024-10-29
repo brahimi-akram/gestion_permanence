@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ministere_de_l_energie.urls'
+ROOT_URLCONF = 'organisme.urls'
 
 TEMPLATES = [
     {
@@ -81,7 +81,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ministere_de_l_energie.wsgi.application'
+WSGI_APPLICATION = 'organisme.wsgi.application'
 
 
 # Database
